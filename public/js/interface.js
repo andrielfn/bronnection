@@ -15,8 +15,8 @@ var app = window.app || {};
   fn = Interface.prototype;
 
   fn.bindEvents = function() {
-    this.offerButton.on('click', this.bro.onNewOffer);
-    this.callerButton.on('click', this.bro.onNewCaller);
+    this.offerButton.on('click', this.bro.onNewOffer.bind(bro));
+    this.callerButton.on('click', this.bro.onNewCaller.bind(bro));
     this.chatInput.on('keypress', this.onHitEnterKey.bind(this));
 
     // Check if this is the best way to trigger events from another classes.

@@ -9,6 +9,10 @@ h3 {
   font-weight: 300;
 }
 
+h4 {
+  margin-bottom: 10px;
+}
+
 /* ===============================================
  * HEADER
  *================================================*/
@@ -35,7 +39,7 @@ h3 {
   background-color: #FFFCF5;
 }
 
-.start-box {
+.box {
   background-color: #FFF;
   display: inline-block;
   padding: 20px;
@@ -43,7 +47,7 @@ h3 {
   border: 3px solid #F4F4F4;
 }
 
-.start-box select {
+.box select {
   border: 1px solid #F4F4F4;
   background-color: #FFF;
   border-radius: 5px;
@@ -57,7 +61,7 @@ h3 {
   background-size: 16px;
 }
 
-.start-box button {
+.box button {
   font-size: 14px;
   border: none;
   color: #FFF;
@@ -67,8 +71,12 @@ h3 {
   opacity: .7;
 }
 
-.start-box button.offer { background-color: #F8B617; }
-.start-box button.caller { background-color: #DD4B34; }
+.box button:active {
+  box-shadow: 2px 2px 3px 3px rgba(0,0,0,0.15) inset,0 0 6px rgba(0,0,0,.2) inset
+}
+
+.box button.offer { background-color: #F8B617; }
+.box button.caller { background-color: #DD4B34; }
 /* ===============================================
  * CHAT PANEL
  *================================================*/
@@ -143,4 +151,37 @@ h3 {
   color: #888;
   width: 260px;
   margin: 10px;
+}
+
+/* ===============================================
+ * STATS
+ *================================================*/
+.main-container.stats {
+right: 0;
+}
+
+.header.stats {
+  position: relative;
+}
+
+.users-connected-stats h3 {
+width: 300px;
+border-bottom: 1px solid #DDD;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  border: 1px solid #DDD;
+}
+
+table thead tr th {
+  padding: 5px;
+  background: -webkit-gradient(linear, left top, left bottom, from(#FFF), to(#EAEAEA));
+}
+
+table td {
+  text-align: center;
+  padding: 5px;
+  border: 1px solid #e0e0e0;
 }

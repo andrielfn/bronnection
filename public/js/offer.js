@@ -6,11 +6,32 @@ var app = window.app || {};
 
     this.peerConnection = this.createPeerConnection();
     this.dataChannel = this.createDataChannel();
+    this.signalingServer = new app.SignalingServer(
+      this.onSignalingOpen.bind(this),
+      this.onSignalingMessage.bind(this)
+    );
 
     this.setHandlers();
   }
 
   fn = Offer.prototype;
+
+  fn.onSignalingOpen = function() {
+    this.signalingServer.push({
+      type: "new_offer",
+      data: { subject: "games" } // TODO: fix the room fetch.
+    });
+
+    app.trace("Sinaling server connected.")
+  }
+
+  fn.onSignalingMessage = function(message) {
+    var data = JSON.parse(message.data);
+
+    if (data.type == "chat_message") {
+      $(document).trigger("chat.newMessage", data.message);
+    }
+  }
 
   // ============================================
   // All below here is duplicated with Caller.

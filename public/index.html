@@ -16,10 +16,11 @@
   </header>
 
   <section class="main-container">
-    <div class="start-box">
+    <div class="box">
       <select>
-        <option value="room-1">Room 1</option>
-        <option value="room-2">Room 2</option>
+        <option value="games">Games</option>
+        <option value="music">Music</option>
+        <option value="cinema">Cinema</option>
       </select>
       <button class="offer" data-offer-button>Offer</button>
       <button class="caller" data-caller-button>Caller</button>
@@ -44,6 +45,7 @@
   <script src="js/trace.js"></script>
   <script src="js/offer.js"></script>
   <script src="js/caller.js"></script>
+  <script src="js/signaling_server.js"></script>
   <script>
     var bro = new app.Bronnection();
     new app.Interface(bro);

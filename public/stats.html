@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+
+  <link rel="stylesheet" href="css/normalize.css">
+  <link rel="stylesheet" href="css/styles.css">
+
+  <title>Bronnection Statistics</title>
+</head>
+<body>
+  <header class="header stats">
+    <h3>Bronnenction Statistics</h3>
+  </header>
+
+  <section class="main-container stats">
+    <div class="box users-connected-stats">
+      <h3>Users connected</h3>
+
+      <h4>Offers</h4>
+      <table data-table-offers-stats>
+        <thead>
+          <tr>
+            <th>Games</th>
+            <th>Music</th>
+            <th>Cinema</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td data-games-column-stats>0</td>
+            <td data-music-column-stats>0</td>
+            <td data-cinema-column-stats>0</td>
+          </tr>
+        </tbody>
+      </table>
+
+
+      <h4>Callers</h4>
+      <table data-table-callers-stats>
+        <thead>
+          <tr>
+            <th>Games</th>
+            <th>Music</th>
+            <th>Cinema</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td data-games-column-stats>0</td>
+            <td data-music-column-stats>0</td>
+            <td data-cinema-column-stats>0</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <script src="js/stats.js"></script>
+
+  <script>
+    var stats = new app.Stats();
+  </script>
+</body>
+</html>
