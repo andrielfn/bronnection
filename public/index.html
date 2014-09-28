@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+  <script src="https://webrtc.googlecode.com/svn-history/r3905/trunk/samples/js/base/adapter.js"></script>
+
+  <link rel="stylesheet" href="css/normalize.css">
+  <link rel="stylesheet" href="css/styles.css">
+
+  <title>Top Secret</title>
+</head>
+<body>
+  <header class="header">
+    <h3>Top Secret</h3>
+  </header>
+
+  <section class="main-container">
+    <div class="start-box">
+      <select>
+        <option value="room-1">Room 1</option>
+        <option value="room-2">Room 2</option>
+      </select>
+      <button class="offer" data-offer-button>Offer</button>
+      <button class="caller" data-caller-button>Caller</button>
+    </div>
+  </section>
+
+  <div class="chat">
+    <header class="chat-header">
+      <h3>Chat panel</h3>
+    </header>
+
+    <section class="chat-messages" data-chat-messages></section>
+
+    <footer class="chat-footer">
+      <input type="text" disabled data-chat-input placeholder="Type your message here...">
+    </footer>
+  </div>
+
+  <script src="js/config.js"></script>
+  <script src="js/interface.js"></script>
+  <script src="js/bronnection.js"></script>
+  <script src="js/trace.js"></script>
+  <script src="js/offer.js"></script>
+  <script src="js/caller.js"></script>
+  <script src="js/chat.js"></script>
+
+  <script>
+    var bro = new app.Bronnection();
+    new app.Interface(bro);
+  </script>
+</body>
+</html>

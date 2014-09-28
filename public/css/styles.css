@@ -1,0 +1,146 @@
+@import url(http://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600);
+
+body {
+  font-family: 'Source Sans Pro', sans-serif;
+}
+
+h3 {
+  margin: 0;
+  font-weight: 300;
+}
+
+/* ===============================================
+ * HEADER
+ *================================================*/
+.header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 300px;
+  border-bottom: 3px solid #F4F4F4;
+  background-color: #FAFAFA;
+  text-align: center;
+  padding: 15px 0;
+}
+
+/* ===============================================
+ * MAIN CONTAINER
+ *================================================*/
+.main-container {
+  position: absolute;
+  top: 56px;
+  bottom: 0;
+  right: 300px;
+  left: 0;
+  background-color: #FFFCF5;
+}
+
+.start-box {
+  background-color: #FFF;
+  display: inline-block;
+  padding: 20px;
+  margin: 20px;
+  border: 3px solid #F4F4F4;
+}
+
+.start-box select {
+  border: 1px solid #F4F4F4;
+  background-color: #FFF;
+  border-radius: 5px;
+  width: 150px;
+  padding: 8px;
+  font-size: 14px;
+  -webkit-appearance:none;
+  -moz-appearance:none;
+  appearance:none;
+  background: #FFF url('../img/arrow-down.svg') no-repeat 95% center;
+  background-size: 16px;
+}
+
+.start-box button {
+  font-size: 14px;
+  border: none;
+  color: #FFF;
+  border-radius: 5px;
+  padding: 8px;
+  width: 100px;
+  opacity: .7;
+}
+
+.start-box button.offer { background-color: #F8B617; }
+.start-box button.caller { background-color: #DD4B34; }
+/* ===============================================
+ * CHAT PANEL
+ *================================================*/
+.chat {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  width: 300px;
+  border-left: 3px solid #F4F4F4;
+}
+
+.chat-footer {
+  width: 300px;
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  background-color: #FAFAFA;
+  border-top: 3px solid #F4F4F4;
+}
+
+.chat-header {
+  border-bottom: 3px solid #F4F4F4;
+  background-color: #FAFAFA;
+  text-align: center;
+  padding: 15px 0;
+}
+
+.chat-messages {
+  position: absolute;
+  top: 56px;
+  bottom: 59px;
+  right: 0;
+  left: 0;
+  overflow-x: scroll;
+  font-weight: 300;
+  font-size: 14px;
+}
+
+.chat-messages .message {
+  padding: 8px;
+  margin: 0;
+}
+
+.chat-messages .message:before {
+  display: inline-block;
+  border-radius: 28px;
+  font-size: 12px;
+  margin-right: 5px;
+  color: #FFF;
+}
+
+.chat-messages .message.my-message:before {
+  background-color: #0B9C57;
+  opacity: 0.3;
+  padding: 11px 10px;
+  content: 'You';
+}
+
+.chat-messages .message.his-message:before {
+  background-color: #3D6AAE;
+  opacity: 0.3;
+  padding: 11px 8px;
+  content: 'Him';
+}
+
+.chat-footer input {
+  border: 1px solid #DEDEDE;
+  padding: 8px;
+  border-radius: 5px;
+  font-size: 14px;
+  color: #888;
+  width: 260px;
+  margin: 10px;
+}
