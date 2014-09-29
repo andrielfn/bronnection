@@ -8,15 +8,15 @@ var offer, caller; // Gambis
   fn = Bronnection.prototype;
 
   fn.onNewOffer = function() {
-    offer = new app.Offer();
+    this.client = new app.Offer();
   }
 
   fn.onNewCaller = function() {
-    caller = new app.Caller();
+    this.client = new app.Caller();
   }
 
   fn.onChatInput = function(message) {
-    caller.dataChannel.send(message);
+    this.client.dataChannel.send(message);
   }
 
   app.Bronnection = Bronnection;

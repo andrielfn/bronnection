@@ -8,6 +8,7 @@ var app = window.app || {};
     this.callerButton = $('[data-caller-button]');
     this.chatInput = $('[data-chat-input]');
     this.chatMessages = $('[data-chat-messages]');
+    this.startBox = $(['data-start-box']);
 
     this.bindEvents();
   }
@@ -21,22 +22,25 @@ var app = window.app || {};
 
     // Check if this is the best way to trigger events from another classes.
     $(document).bind("chat.newMessage", this.onNewChatMessage.bind(this));
-
-    // TODO: do this only if the connection was established between the two peers.
-    this.callerButton.on('click', $.proxy(function() {
-      this.chatInput.prop('disabled', false);
-    }, this));
+    $(document).bind("connection.established", this.onConenctionEstablished.bind(this));
   }
 
   fn.onHitEnterKey = function(e) {
     if (e.charCode == 13) {
-      this.bro.onChatInput(this.chatInput.val());
+      var message = this.chatInput.val();
+      this.bro.onChatInput(message);
+      this.onNewChatMessage(null, "my", message);
       this.chatInput.val('');
     }
   }
 
-  fn.onNewChatMessage = function(e, message) {
-    this.chatMessages.append('<p class="message my-message">' + message + '</p>');
+  fn.onConenctionEstablished = function() {
+    this.chatInput.prop('disabled', false);
+    this.onNewChatMessage(null, "server", "Connection established! :)");
+  }
+
+  fn.onNewChatMessage = function(e, sender, message) {
+    this.chatMessages.append('<p class="message ' + sender + '-message">' + message + '</p>');
     this.chatMessages.animate({ scrollTop: this.chatMessages[0].scrollHeight });
   }
 

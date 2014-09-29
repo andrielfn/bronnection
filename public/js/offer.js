@@ -6,6 +6,7 @@ var app = window.app || {};
 
     this.peerConnection = this.createPeerConnection();
     this.dataChannel = this.createDataChannel();
+
     this.signalingServer = new app.SignalingServer(
       this.onSignalingOpen.bind(this),
       this.onSignalingMessage.bind(this)
@@ -17,10 +18,7 @@ var app = window.app || {};
   fn = Offer.prototype;
 
   fn.onSignalingOpen = function() {
-    this.signalingServer.push({
-      type: "new_offer",
-      data: { subject: "games" } // TODO: fix the room fetch.
-    });
+    this.createOffer();
 
     app.trace("Sinaling server connected.")
   }
@@ -28,9 +26,48 @@ var app = window.app || {};
   fn.onSignalingMessage = function(message) {
     var data = JSON.parse(message.data);
 
+    console.log(data);
+
     if (data.type == "chat_message") {
-      $(document).trigger("chat.newMessage", data.message);
+      $(document).trigger("chat.newMessage", ["server", data.message]);
+    } else if (data.type == "caller_description") {
+      this.setRemoteDescription(data.description);
+    } else if (data.type == "caller_ice_candidate") {
+      this.peerConnection.addIceCandidate(new RTCIceCandidate(data.candidate));
     }
+  }
+
+  fn.setRemoteDescription = function(description) {
+    this.peerConnection.setRemoteDescription(
+      new RTCSessionDescription(description),
+      function(){},
+      function(err){ app.trace(err); }
+    );
+  }
+
+  fn.createOffer = function() {
+    this.peerConnection.createOffer(
+      this.setLocalDescription.bind(this),
+      function(err) { app.trace(err); }
+    );
+  }
+
+  fn.setLocalDescription = function(description) {
+    this.peerConnection.setLocalDescription(
+      description,
+      this.sendLocalDescription.bind(this),
+      function(err) { app.trace(err) }
+    )
+  }
+
+  fn.sendLocalDescription = function() {
+    this.signalingServer.push({
+      type: "new_offer",
+      data: {
+        subject: "games", // TODO: fix the room fetch.
+        description: this.peerConnection.localDescription
+      }
+    });
   }
 
   // ============================================
@@ -50,7 +87,7 @@ var app = window.app || {};
   }
 
   fn.setHandlers = function() {
-    this.peerConnection.onicecandidate = this.onIceDandidate;
+    this.peerConnection.onicecandidate = this.onIceDandidate.bind(this);
     this.dataChannel.onopen = this.onDataChanelStateChanged.bind(this);
     this.dataChannel.onclose = this.onDataChanelStateChanged.bind(this);
     this.dataChannel.onmessage = this.onDataChannelMessage;
@@ -58,19 +95,25 @@ var app = window.app || {};
 
   fn.onIceDandidate = function(event) {
     if (event.candidate) {
-      caller.peerConnection.addIceCandidate(event.candidate);
-      app.trace("Offer ICE Candidate: " + event.candidate.candidate)
+      this.signalingServer.push({
+        type: "ice_candidate",
+        data: event.candidate
+      });
     }
   }
 
   fn.onDataChanelStateChanged = function() {
     var state = this.dataChannel.readyState;
 
+    if (state == "open") {
+      $(document).trigger("connection.established");
+    }
+
     trace("Offer channel state is: " + state);
   }
 
   fn.onDataChannelMessage = function(e) {
-    $(document).trigger("chat.newMessage", e.data);
+    $(document).trigger("chat.newMessage", ["his", e.data]);
 
     trace("Offer received new message: " + e.data);
   }

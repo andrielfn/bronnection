@@ -19,15 +19,22 @@ func websocketHandler(ws *websocket.Conn) {
   }()
 
   var gm GenericMessage
-  var offer *Offer
+  var client *Client
+  var room *Room
 
   for {
     err := websocket.JSON.Receive(ws, &gm)
 
     if err == io.EOF {
-      availableOffers.Remove(offer.Subject, offer.Uuid)
-      log.Println(offer.Uuid, "is out")
-      // log.Println(offer.Uuid, " is out")
+      if client.Type == "offer" {
+        log.Println("Room:", room)
+        availableOffers.Remove(client.Subject, client.Uuid)
+        websocket.JSON.Send(room.Caller.Websocket, serverChatMessage("Offer disconnected. :("))
+      } else {
+        websocket.JSON.Send(room.Offer.Websocket, serverChatMessage("Caller disconnected. :("))
+      }
+
+      log.Println(client.Uuid, "is out")
       statsChannel <- true
       return
     } else if err != nil {
@@ -35,40 +42,85 @@ func websocketHandler(ws *websocket.Conn) {
     } else {
       switch gm.Type {
       case "new_offer":
-        offer = newOffer(gm.Data, ws)
+        client = newOffer(gm.Data, ws)
+
       case "new_caller":
-        newCaller(gm.Data, ws)
+        client, room = newCaller(gm.Data, ws)
+
+      case "caller_description":
+        d := &Description{}
+        if err := json.Unmarshal(gm.Data, d); err == nil {
+          websocket.JSON.Send(room.Offer.Websocket, &DescriptionMessage{Type: "caller_description", Description: *d})
+        }
+
+      case "caller_ice_candidate":
+        ice := &IceCandidate{}
+        if err := json.Unmarshal(gm.Data, ice); err == nil {
+          websocket.JSON.Send(room.Offer.Websocket, &IceCandidateMessage{Type: "caller_ice_candidate", Candidate: *ice})
+        }
+
+      case "ice_candidate":
+        ice := &IceCandidate{}
+        if err := json.Unmarshal(gm.Data, ice); err == nil {
+          client.AddIceCandidate(ice)
+        }
       }
     }
   }
 }
 
-func newCaller(rm json.RawMessage, ws *websocket.Conn) {
+func newCaller(rm json.RawMessage, ws *websocket.Conn) (c *Client, r *Room) {
   data := NewCallerMessageData{}
 
-  if err := json.Unmarshal(rm, &data); err == nil {
-    if offer := availableOffers.Find(data.Subject); offer != nil {
-      // offer ok
-    } else {
-      websocket.JSON.Send(ws, serverChatMessage("No offer available found. Waiting new offer connect..."))
+  if err := json.Unmarshal(rm, &data); err != nil {
+    log.Println(err)
+    return nil, nil
+  }
+
+  c = &Client{
+    Websocket: ws,
+    Uuid:      uuid.New(),
+    Subject:   data.Subject,
+    Type:      "caller"}
+
+  log.Println(c.Uuid, "as a new caller")
+
+  // Non-blocking channel send.
+  select {
+  case statsChannel <- true:
+  default:
+  }
+
+  if o := availableOffers.Find(data.Subject); o != nil {
+    availableOffers.Remove(data.Subject, o.Uuid)
+
+    websocket.JSON.Send(ws, serverChatMessage("Offer found!"))
+    websocket.JSON.Send(ws, &DescriptionMessage{Type: "offer_description", Description: o.Description})
+
+    for _, ice := range o.IceCandidates {
+      websocket.JSON.Send(ws, &IceCandidateMessage{Type: "offer_ice_candidate", Candidate: *ice})
     }
 
-    // Non-blocking channel send
-    select {
-    case statsChannel <- true:
-    default:
-    }
+    return c, &Room{Offer: o, Caller: c}
   } else {
-    log.Println(err)
+    websocket.JSON.Send(ws, serverChatMessage("No offer available found. Waiting new offer connect..."))
   }
+
+  return c, nil
 }
 
-func newOffer(rm json.RawMessage, ws *websocket.Conn) (offer *Offer) {
+func newOffer(rm json.RawMessage, ws *websocket.Conn) (c *Client) {
   data := NewOfferMessageData{}
 
   if err := json.Unmarshal(rm, &data); err == nil {
-    offer = &Offer{Uuid: uuid.New(), Subject: data.Subject}
-    availableOffers.Add(offer)
+    c = &Client{
+      Websocket:   ws,
+      Uuid:        uuid.New(),
+      Subject:     data.Subject,
+      Type:        "offer",
+      Description: data.Descrption}
+
+    availableOffers.Add(c)
     websocket.JSON.Send(ws, serverChatMessage("You are connected and waiting a caller."))
 
     // Non-blocking channel send
@@ -77,12 +129,12 @@ func newOffer(rm json.RawMessage, ws *websocket.Conn) (offer *Offer) {
     default:
     }
 
-    log.Println(offer.Uuid, "as a new offer")
+    log.Println(c.Uuid, "as a new offer")
   } else {
     log.Println(err)
   }
 
-  return offer
+  return c
 }
 
 func websocketStatsHandler(ws *websocket.Conn) {

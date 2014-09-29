@@ -12,8 +12,6 @@ var app = window.app || {};
     );
 
     this.setHandlers();
-
-    // this.createOffer();
   }
 
   fn = Caller.prototype;
@@ -30,9 +28,45 @@ var app = window.app || {};
   fn.onSignalingMessage = function(message) {
     var data = JSON.parse(message.data);
 
+    // console.log(data);
+
     if (data.type == "chat_message") {
-      $(document).trigger("chat.newMessage", data.message);
+      $(document).trigger("chat.newMessage", ["server", data.message]);
+    } else if (data.type == "offer_description") {
+      this.setRemoteDescription(data.description);
+    } else if (data.type == "offer_ice_candidate") {
+      this.peerConnection.addIceCandidate(new RTCIceCandidate(data.candidate));
     }
+  }
+
+  fn.setRemoteDescription = function(description) {
+    this.peerConnection.setRemoteDescription(
+      new RTCSessionDescription(description),
+      this.createAnswer.bind(this),
+      function(err){ console.log(err); }
+    )
+  }
+
+  fn.createAnswer = function() {
+    this.peerConnection.createAnswer(
+      this.setLocalDescription.bind(this),
+      function(err) { app.trace(err); }
+    );
+  }
+
+  fn.setLocalDescription = function(description) {
+    this.peerConnection.setLocalDescription(
+      description,
+      this.sendLocalDescription.bind(this, description),
+      function(err) { app.trace(err) }
+    )
+  }
+
+  fn.sendLocalDescription = function(description) {
+    this.signalingServer.push({
+      type: "caller_description",
+      data: description
+    });
   }
 
   // fn.createOffer = function() {
@@ -70,22 +104,35 @@ var app = window.app || {};
   }
 
   fn.setHandlers = function() {
-    this.peerConnection.onicecandidate = this.onIceDandidate;
+    this.peerConnection.onicecandidate = this.onIceCandidate.bind(this);
     this.dataChannel.onopen = this.onDataChanelStateChanged.bind(this);
     this.dataChannel.onclose = this.onDataChanelStateChanged.bind(this);
+    this.dataChannel.onmessage = this.onDataChannelMessage;
   }
 
-  fn.onIceDandidate = function(event) {
+  fn.onIceCandidate = function(event) {
     if (event.candidate) {
-      offer.peerConnection.addIceCandidate(event.candidate);
-      app.trace("Caller ICE Candidate: " + event.candidate.candidate)
+      this.signalingServer.push({
+        type: "caller_ice_candidate",
+        data: event.candidate
+      });
     }
   }
 
   fn.onDataChanelStateChanged = function() {
     var state = this.dataChannel.readyState;
 
+    if (state == "open") {
+      $(document).trigger("connection.established");
+    }
+
     trace("Caller channel state is: " + state);
+  }
+
+  fn.onDataChannelMessage = function(e) {
+    $(document).trigger("chat.newMessage", ["his", e.data]);
+
+    trace("Offer received new message: " + e.data);
   }
 
   app.Caller = Caller;

@@ -17,7 +17,9 @@ var app = window.app || {};
   }
 
   fn.push = function(data) {
-    this.websocket.send(JSON.stringify(data));
+    var message = JSON.stringify(data);
+    this.websocket.send(message);
+    app.trace("Sent to signaling server: " + message);
   }
 
   app.SignalingServer = SignalingServer;

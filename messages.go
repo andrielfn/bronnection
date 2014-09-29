@@ -15,8 +15,19 @@ type ChatMessage struct {
   Message string `json:"message"`
 }
 
+type DescriptionMessage struct {
+  Type        string      `json:"type"`
+  Description Description `json:"description"`
+}
+
+type Description struct {
+  Sdp  string `json:"sdp"`
+  Type string `json:"type"`
+}
+
 type NewOfferMessageData struct {
-  Subject string `json:"subject"`
+  Subject    string      `json:"subject"`
+  Descrption Description `json:"description"`
 }
 
 type NewCallerMessageData struct {
@@ -32,6 +43,17 @@ type Subjects struct {
 type StatusMessage struct {
   ConnectedOffers  Subjects `json:"connected_offers"`
   ConnectedCallers Subjects `json:"connected_callers"`
+}
+
+type IceCandidate struct {
+  SdpMLineIndex int    `json:"sdpMLineIndex"`
+  SdpMid        string `json:"sdpMid"`
+  Candidate     string `json:"candidate"`
+}
+
+type IceCandidateMessage struct {
+  Type      string       `json:"type"`
+  Candidate IceCandidate `json:"candidate"`
 }
 
 func serverChatMessage(m string) ChatMessage {

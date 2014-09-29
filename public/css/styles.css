@@ -135,6 +135,13 @@ h4 {
   left: 8px;
 }
 
+.chat-messages .message.server-message:before {
+  background-color: #DD4B34;
+  opacity: 0.3;
+  padding: 11px;
+  content: 'Srv';
+}
+
 .chat-messages .message.my-message:before {
   background-color: #0B9C57;
   opacity: 0.3;
