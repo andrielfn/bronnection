@@ -3,11 +3,20 @@ package main
 type AvailableOffers map[string][]*Offer
 
 type Offer struct {
-  Uuid string
+  Uuid    string
+  Subject string
 }
 
-func (ao *AvailableOffers) Add(s string, o *Offer) {
-  (*ao)[s] = append((*ao)[s], o)
+func (ao *AvailableOffers) Find(s string) (offer *Offer) {
+  if len((*ao)[s]) > 0 {
+    return nil
+  } else {
+    return nil
+  }
+}
+
+func (ao *AvailableOffers) Add(o *Offer) {
+  (*ao)[o.Subject] = append((*ao)[o.Subject], o)
 }
 
 func (ao *AvailableOffers) Remove(s string, uuid string) {

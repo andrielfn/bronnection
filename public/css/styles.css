@@ -117,8 +117,11 @@ h4 {
 }
 
 .chat-messages .message {
+  position: relative;
   padding: 8px;
+  padding-left: 52px;
   margin: 0;
+  min-height: 36px;
 }
 
 .chat-messages .message:before {
@@ -127,6 +130,9 @@ h4 {
   font-size: 12px;
   margin-right: 5px;
   color: #FFF;
+  position: absolute;
+  top: 8px;
+  left: 8px;
 }
 
 .chat-messages .message.my-message:before {

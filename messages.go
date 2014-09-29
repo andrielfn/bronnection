@@ -15,7 +15,11 @@ type ChatMessage struct {
   Message string `json:"message"`
 }
 
-type AvailableOfferMessageData struct {
+type NewOfferMessageData struct {
+  Subject string `json:"subject"`
+}
+
+type NewCallerMessageData struct {
   Subject string `json:"subject"`
 }
 

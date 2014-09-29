@@ -1,6 +1,7 @@
 package main
 
 import (
+  "code.google.com/p/go-uuid/uuid"
   "encoding/json"
   "io"
   "log"
@@ -13,34 +14,75 @@ var availableOffers = make(AvailableOffers)
 var statsChannel = make(chan bool)
 
 func websocketHandler(ws *websocket.Conn) {
+  defer func() {
+    ws.Close()
+  }()
+
   var gm GenericMessage
+  var offer *Offer
 
   for {
     err := websocket.JSON.Receive(ws, &gm)
 
     if err == io.EOF {
-
+      availableOffers.Remove(offer.Subject, offer.Uuid)
+      log.Println(offer.Uuid, "is out")
+      // log.Println(offer.Uuid, " is out")
+      statsChannel <- true
+      return
     } else if err != nil {
       log.Println(err)
     } else {
-      parseMessage(gm, ws)
+      switch gm.Type {
+      case "new_offer":
+        offer = newOffer(gm.Data, ws)
+      case "new_caller":
+        newCaller(gm.Data, ws)
+      }
     }
   }
 }
 
-func parseMessage(gm GenericMessage, ws *websocket.Conn) {
-  switch gm.Type {
-  case "new_offer":
-    data := AvailableOfferMessageData{}
-    if err := json.Unmarshal(gm.Data, &data); err == nil {
-      availableOffers.Add(data.Subject, &Offer{Uuid: "12312313"})
-      websocket.JSON.Send(ws, serverChatMessage("You are connected and waiting a caller."))
-      statsChannel <- true
+func newCaller(rm json.RawMessage, ws *websocket.Conn) {
+  data := NewCallerMessageData{}
+
+  if err := json.Unmarshal(rm, &data); err == nil {
+    if offer := availableOffers.Find(data.Subject); offer != nil {
+      // offer ok
     } else {
-      log.Println(err)
+      websocket.JSON.Send(ws, serverChatMessage("No offer available found. Waiting new offer connect..."))
     }
+
+    // Non-blocking channel send
+    select {
+    case statsChannel <- true:
+    default:
+    }
+  } else {
+    log.Println(err)
+  }
+}
+
+func newOffer(rm json.RawMessage, ws *websocket.Conn) (offer *Offer) {
+  data := NewOfferMessageData{}
+
+  if err := json.Unmarshal(rm, &data); err == nil {
+    offer = &Offer{Uuid: uuid.New(), Subject: data.Subject}
+    availableOffers.Add(offer)
+    websocket.JSON.Send(ws, serverChatMessage("You are connected and waiting a caller."))
+
+    // Non-blocking channel send
+    select {
+    case statsChannel <- true:
+    default:
+    }
+
+    log.Println(offer.Uuid, "as a new offer")
+  } else {
+    log.Println(err)
   }
 
+  return offer
 }
 
 func websocketStatsHandler(ws *websocket.Conn) {
