@@ -2,7 +2,7 @@ var app = window.app || {};
 
 (function($, app){
   function SignalingServer(onOpenCallback, onMessageCallback) {
-    this.websocket = new WebSocket("ws://localhost:4000/ws");
+    this.websocket = new WebSocket("ws://"+window.location.host+"/ws");
 
     this.setHandlers(onOpenCallback, onMessageCallback);
 
