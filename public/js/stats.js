@@ -9,7 +9,7 @@ var app = window.app || {};
     this.websocket.onmessage = this.onStatusUpdate.bind(this);
   }
 
-  fn = Stats.prototype;
+  var fn = Stats.prototype;
 
   fn.onStatusUpdate = function(message) {
     var stats = JSON.parse(message.data);

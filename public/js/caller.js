@@ -14,7 +14,7 @@ var app = window.app || {};
     this.setHandlers();
   }
 
-  fn = Caller.prototype;
+  var fn = Caller.prototype;
 
   fn.onSignalingOpen = function() {
     this.signalingServer.push({

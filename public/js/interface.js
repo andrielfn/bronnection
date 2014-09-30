@@ -15,7 +15,7 @@ var app = window.app || {};
     this.bindEvents();
   }
 
-  fn = Interface.prototype;
+  var fn = Interface.prototype;
 
   fn.bindEvents = function() {
     this.chatInput.on('keypress', this.onHitEnterKey.bind(this));

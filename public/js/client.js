@@ -18,7 +18,7 @@ var app = window.app || {};
     this.setHandlers();
   }
 
-  fn = Client.prototype;
+  var fn = Client.prototype;
 
   fn.setHandlers = function() {
     this.peerConnection.onicecandidate = this.onIceDandidate.bind(this);

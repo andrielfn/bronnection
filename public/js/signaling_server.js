@@ -9,7 +9,7 @@ var app = window.app || {};
     app.trace("SignalingServer instance created.")
   }
 
-  fn = SignalingServer.prototype;
+  var fn = SignalingServer.prototype;
 
   fn.setHandlers = function(onOpenCallback, onMessageCallback) {
     this.websocket.onopen = onOpenCallback;

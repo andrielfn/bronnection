@@ -5,7 +5,7 @@ var app = window.app || {};
 
   function Bronnection() {}
 
-  fn = Bronnection.prototype;
+  var fn = Bronnection.prototype;
 
   fn.checkClientType = function() {
     if (document.location.hash === "" || document.location.hash === undefined) {

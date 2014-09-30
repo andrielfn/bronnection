@@ -15,7 +15,7 @@ var app = window.app || {};
     this.setHandlers();
   }
 
-  fn = Offer.prototype;
+  var fn = Offer.prototype;
 
   fn.onSignalingOpen = function() {
     this.createOffer();
