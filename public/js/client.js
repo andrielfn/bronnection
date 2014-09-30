@@ -9,7 +9,12 @@ var app = window.app || {};
     this.peerConnection = this.createPeerConnection();
     this.dataChannel = this.createDataChannel();
 
-    this.getUserMedia();
+    this.signalingServer = new app.SignalingServer(
+      this.onSignalingOpen.bind(this),
+      this.onSignalingMessage.bind(this)
+    );
+
+    // this.getUserMedia();
     this.setHandlers();
   }
 
@@ -43,11 +48,6 @@ var app = window.app || {};
     if (this.clientType == "offer") {
       $(document).trigger("interface.displayLink", this.sessionId);
     }
-
-    this.signalingServer = new app.SignalingServer(
-      this.onSignalingOpen.bind(this),
-      this.onSignalingMessage.bind(this)
-    );
   }
 
   fn.onIceDandidate = function(event) {
