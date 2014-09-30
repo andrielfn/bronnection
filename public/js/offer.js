@@ -88,9 +88,14 @@ var app = window.app || {};
 
   fn.setHandlers = function() {
     this.peerConnection.onicecandidate = this.onIceDandidate.bind(this);
+    this.peerConnection.onaddstream = this.onAddStream;
     this.dataChannel.onopen = this.onDataChanelStateChanged.bind(this);
     this.dataChannel.onclose = this.onDataChanelStateChanged.bind(this);
     this.dataChannel.onmessage = this.onDataChannelMessage;
+  }
+
+  fn.onAddStream = function(stream) {
+    $(document).trigger("media.setRemote", stream)
   }
 
   fn.onIceDandidate = function(event) {

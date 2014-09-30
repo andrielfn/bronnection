@@ -25,8 +25,8 @@ type Description struct {
   Type string `json:"type"`
 }
 
-type NewOfferMessageData struct {
-  Subject    string      `json:"subject"`
+type NewRoomMessageData struct {
+  RoomId     string      `json:"room_id"`
   Descrption Description `json:"description"`
 }
 

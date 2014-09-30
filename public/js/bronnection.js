@@ -1,5 +1,5 @@
 var app = window.app || {};
-var offer, caller; // Gambis
+// var offer, caller; // Gambis
 
 (function($, app) {
 
@@ -7,16 +7,37 @@ var offer, caller; // Gambis
 
   fn = Bronnection.prototype;
 
-  fn.onNewOffer = function() {
-    this.client = new app.Offer();
+  fn.checkClientType = function() {
+    if (document.location.hash === "" || document.location.hash === undefined) {
+      this.createOffer();
+    } else {
+      this.createCaller();
+    }
   }
 
-  fn.onNewCaller = function() {
-    this.client = new app.Caller();
+  fn.createOffer = function() {
+    this.sessionId = this.generateSessionId();
+    this.client = new app.Client("offer", this.sessionId);
+    document.location.hash = this.sessionId;
+    $(document).trigger("client.newOffer", this.sessionId);
+  }
+
+  fn.createCaller = function() {
+    this.sessionId = document.location.hash.slice(1);
+    this.client = new app.Client("caller", this.sessionId);
+    // $(document).trigger("client.newCaller", this.sessionId);
+  }
+
+  fn.generateSessionId = function() {
+    return Date.now()+"-"+Math.round(Math.random()*10000);
   }
 
   fn.onChatInput = function(message) {
     this.client.dataChannel.send(message);
+  }
+
+  fn.setupMedia = function(successCallback) {
+    getUserMedia({ "video": true, "audio": true }, successCallback, function(err) { console.log(err); });
   }
 
   app.Bronnection = Bronnection;

@@ -8,7 +8,9 @@ var app = window.app || {};
     this.callerButton = $('[data-caller-button]');
     this.chatInput = $('[data-chat-input]');
     this.chatMessages = $('[data-chat-messages]');
-    this.startBox = $(['data-start-box']);
+    this.startBox = $('[data-start-box]');
+    this.localVideo = $(document).find('[data-local-video]');
+    this.remoteVideo = $(document).find('[data-remote-video]');
 
     this.bindEvents();
   }
@@ -16,13 +18,30 @@ var app = window.app || {};
   fn = Interface.prototype;
 
   fn.bindEvents = function() {
-    this.offerButton.on('click', this.bro.onNewOffer.bind(bro));
-    this.callerButton.on('click', this.bro.onNewCaller.bind(bro));
     this.chatInput.on('keypress', this.onHitEnterKey.bind(this));
 
     // Check if this is the best way to trigger events from another classes.
     $(document).bind("chat.newMessage", this.onNewChatMessage.bind(this));
     $(document).bind("connection.established", this.onConenctionEstablished.bind(this));
+    $(document).bind("media.setLocal", this.onSetLocalVideo.bind(this));
+    $(document).bind("media.setRemote", this.onSetRemoteVideo.bind(this));
+    $(document).bind("client.newOffer", this.onNewOffer.bind(this));
+
+    $(document).ready(this.bro.checkClientType.bind(this.bro));
+  }
+
+  fn.onNewOffer = function(e, hash) {
+    var link = window.location.href;
+    this.startBox.html("<a href='"+link+"'>"+link+"</a>");
+  }
+
+  fn.onSetLocalVideo = function(e, stream) {
+    this.localVideo.attr('src', URL.createObjectURL(stream));
+  }
+
+  fn.onSetRemoteVideo = function(e, stream) {
+    console.log(stream);
+    this.remoteVideo.attr('src', URL.createObjectURL(stream));
   }
 
   fn.onHitEnterKey = function(e) {

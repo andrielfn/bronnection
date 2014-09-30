@@ -21,10 +21,16 @@
         <option value="games">Games</option>
         <option value="music">Music</option>
         <option value="cinema">Cinema</option>
-      </select> -->
+      </select>
       <button class="offer" data-offer-button>Offer</button>
-      <button class="caller" data-caller-button>Caller</button>
+      <button class="caller" data-caller-button>Caller</button> -->
     </div>
+
+    <div class="medias" data-medias>
+      <video data-remote-video class="remote-video" autoplay></video>
+      <video data-local-video class="local-video" muted="muted" autoplay></video>
+    </div>
+
   </section>
 
   <div class="chat">
@@ -43,12 +49,13 @@
   <script src="js/interface.js"></script>
   <script src="js/bronnection.js"></script>
   <script src="js/trace.js"></script>
-  <script src="js/offer.js"></script>
-  <script src="js/caller.js"></script>
+  <script src="js/client.js"></script>
   <script src="js/signaling_server.js"></script>
   <script>
-    var bro = new app.Bronnection();
-    new app.Interface(bro);
+    $(document).ready(function() {
+      var bro = new app.Bronnection();
+      new app.Interface(bro);
+    })
   </script>
 </body>
 </html>
