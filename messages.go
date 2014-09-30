@@ -34,15 +34,8 @@ type NewCallerMessageData struct {
   Subject string `json:"subject"`
 }
 
-type Subjects struct {
-  Games  int `json:"games"`
-  Music  int `json:"music"`
-  Cinema int `json:"cinema"`
-}
-
 type StatusMessage struct {
-  ConnectedOffers  Subjects `json:"connected_offers"`
-  ConnectedCallers Subjects `json:"connected_callers"`
+  Rooms AvailableRooms `json:"rooms"`
 }
 
 type IceCandidate struct {

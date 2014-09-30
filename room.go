@@ -15,3 +15,7 @@ func (ar *AvailableRooms) Add(r *Room) {
 func (ar *AvailableRooms) Get(id string) *Room {
   return (*ar)[id]
 }
+
+func (ar *AvailableRooms) Remove(id string) {
+  (*ar)[id] = nil
+}

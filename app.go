@@ -23,7 +23,7 @@ func websocketHandler(ws *websocket.Conn) {
   for {
     err := websocket.JSON.Receive(ws, &gm)
     if err == io.EOF {
-      log.Println("OUT")
+      availableRooms.Remove(room.RoomId)
       statsChannel <- true
       return
     } else if err != nil {
@@ -126,9 +126,11 @@ func websocketStatsHandler(ws *websocket.Conn) {
     ws.Close()
   }()
 
-  // websocket.JSON.Send(ws, StatusMessage{
-  //   ConnectedOffers:  Subjects{Games: len(availableOffers["games"]), Music: len(availableOffers["music"]), Cinema: len(availableOffers["cinema"])},
-  //   ConnectedCallers: Subjects{Games: 0, Music: 0, Cinema: 0}})
+  d, _ := json.Marshal(&StatusMessage{Rooms: availableRooms})
+  log.Println(string(d))
+  // &StatusMessage{}
+
+  // websocket.JSON.Send(ws, )
 
   for {
     select {
