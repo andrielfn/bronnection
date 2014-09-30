@@ -19,13 +19,11 @@ var app = window.app || {};
     this.sessionId = this.generateSessionId();
     this.client = new app.Client("offer", this.sessionId);
     document.location.hash = this.sessionId;
-    $(document).trigger("client.newOffer", this.sessionId);
   }
 
   fn.createCaller = function() {
     this.sessionId = document.location.hash.slice(1);
     this.client = new app.Client("caller", this.sessionId);
-    // $(document).trigger("client.newCaller", this.sessionId);
   }
 
   fn.generateSessionId = function() {

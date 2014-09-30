@@ -23,6 +23,10 @@ var app = window.app || {};
     this.dataChannel.onmessage = this.onDataChannelMessage;
   }
 
+  fn.onAddStream = function(e) {
+    $('[data-remote-video]').attr('src', URL.createObjectURL(e.stream));
+  }
+
   fn.getUserMedia = function() {
     getUserMedia(
       {audio: true, video: true},
@@ -35,6 +39,10 @@ var app = window.app || {};
     $('[data-local-video]').attr('src', URL.createObjectURL(stream));
 
     this.peerConnection.addStream(stream);
+
+    if (this.clientType == "offer") {
+      $(document).trigger("interface.displayLink", this.sessionId);
+    }
 
     this.signalingServer = new app.SignalingServer(
       this.onSignalingOpen.bind(this),

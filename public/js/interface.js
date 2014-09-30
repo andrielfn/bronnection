@@ -8,7 +8,7 @@ var app = window.app || {};
     this.callerButton = $('[data-caller-button]');
     this.chatInput = $('[data-chat-input]');
     this.chatMessages = $('[data-chat-messages]');
-    this.startBox = $('[data-start-box]');
+    this.startBox = $('[data-link-box]');
     this.localVideo = $(document).find('[data-local-video]');
     this.remoteVideo = $(document).find('[data-remote-video]');
 
@@ -25,14 +25,14 @@ var app = window.app || {};
     $(document).bind("connection.established", this.onConenctionEstablished.bind(this));
     $(document).bind("media.setLocal", this.onSetLocalVideo.bind(this));
     $(document).bind("media.setRemote", this.onSetRemoteVideo.bind(this));
-    $(document).bind("client.newOffer", this.onNewOffer.bind(this));
+    $(document).bind("interface.displayLink", this.displayLink.bind(this));
 
     $(document).ready(this.bro.checkClientType.bind(this.bro));
   }
 
-  fn.onNewOffer = function(e, hash) {
+  fn.displayLink = function(e, hash) {
     var link = window.location.href;
-    this.startBox.html("<a href='"+link+"'>"+link+"</a>");
+    this.startBox.show().find('a').html(link);
   }
 
   fn.onSetLocalVideo = function(e, stream) {
@@ -40,7 +40,6 @@ var app = window.app || {};
   }
 
   fn.onSetRemoteVideo = function(e, stream) {
-    console.log(stream);
     this.remoteVideo.attr('src', URL.createObjectURL(stream));
   }
 
