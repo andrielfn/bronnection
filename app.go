@@ -67,6 +67,7 @@ func websocketHandler(ws *websocket.Conn) {
         log.Println("Received caller ICECandidate.")
         ice := &IceCandidate{}
         if err := json.Unmarshal(gm.Data, ice); err == nil {
+          log.Println(ice)
           ic := &IceCandidateMessage{Type: "caller_ice_candidate", Candidate: *ice}
           room.SendToInClients(ic, sessionId)
         }
