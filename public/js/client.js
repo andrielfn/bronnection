@@ -90,13 +90,15 @@ var app = window.app || {};
 
   fn.onSignalingOpen = function() {
     if (this.clientType == "offer") {
-      this.createOffer();
-    } else if (this.clientType == "caller") {
       this.signalingServer.push({
-        type: "join_room",
+        type: "new_room",
         data: { room_id: this.sessionId }
       });
+    } else if (this.clientType == "caller") {
+      this.createOffer();
     }
+
+
 
     app.trace("Sinaling server connected.")
   }
@@ -128,7 +130,7 @@ var app = window.app || {};
   }
 
   fn.createAnswer = function() {
-    if (this.clientType == "caller") {
+    if (this.clientType == "offer") {
       this.peerConnection.createAnswer(
         this.setLocalDescription.bind(this),
         function(err) { app.trace(err); }
@@ -154,10 +156,10 @@ var app = window.app || {};
   fn.sendLocalDescription = function() {
     var type;
 
-    if (this.clientType == "offer") {
-      type = "new_room";
-    } else if(this.clientType == "caller") {
-      type = "caller_description";
+    if (this.clientType == "caller") {
+      type = "join_room";
+    } else if (this.clientType == "offer") {
+      type = "offer_description";
     }
 
     this.signalingServer.push({

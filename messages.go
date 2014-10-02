@@ -26,8 +26,8 @@ type Description struct {
 }
 
 type NewRoomMessageData struct {
-  RoomId     string      `json:"room_id"`
-  Descrption Description `json:"description"`
+  RoomId      string      `json:"room_id"`
+  Description Description `json:"description"`
 }
 
 type NewCallerMessageData struct {
@@ -35,7 +35,12 @@ type NewCallerMessageData struct {
 }
 
 type StatusMessage struct {
-  Rooms AvailableRooms `json:"rooms"`
+  Rooms []StatusRoom `json:"rooms"`
+}
+
+type StatusRoom struct {
+  RoomId           string `json:"room_id"`
+  ConnectedClients int    `json:"connected_clients"`
 }
 
 type IceCandidate struct {
