@@ -85,7 +85,7 @@ var app = window.app || {};
 
   fn.createDataChannel = function() {
     app.trace("Offer DataChannel created.")
-    return this.peerConnection.createDataChannel("sendDataChannel", { reliable: false });
+    return this.peerConnection.createDataChannel("sendDataChannel", { reliable: true });
   }
 
   fn.onSignalingOpen = function() {

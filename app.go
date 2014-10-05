@@ -6,6 +6,8 @@ import (
   "io"
   "log"
   "net/http"
+  "strings"
+  "time"
 
   "code.google.com/p/go.net/websocket"
 )
@@ -46,6 +48,7 @@ func websocketHandler(ws *websocket.Conn) {
         log.Println("Join room:", room.RoomId)
 
       case "caller_description":
+        time.Sleep(1 * time.Second)
         log.Println("Received caller description.")
 
         d := NewRoomMessageData{}
@@ -55,6 +58,7 @@ func websocketHandler(ws *websocket.Conn) {
         }
 
       case "offer_description":
+        time.Sleep(1 * time.Second)
         log.Println("Received offer description.")
 
         d := NewRoomMessageData{}
@@ -64,18 +68,17 @@ func websocketHandler(ws *websocket.Conn) {
         }
 
       case "caller_ice_candidate":
-        log.Println("Received caller ICECandidate.")
         ice := &IceCandidate{}
         if err := json.Unmarshal(gm.Data, ice); err == nil {
-          log.Println(ice)
+          log.Println("CALLER ICE:", strings.Split(ice.Candidate, " ")[2], strings.Split(ice.Candidate, " ")[4])
           ic := &IceCandidateMessage{Type: "caller_ice_candidate", Candidate: *ice}
           room.SendToInClients(ic, sessionId)
         }
 
       case "offer_ice_candidate":
-        log.Println("Received offer ICECandidate.")
         ice := &IceCandidate{}
         if err := json.Unmarshal(gm.Data, ice); err == nil {
+          log.Println("OFFER ICE:", strings.Split(ice.Candidate, " ")[2], strings.Split(ice.Candidate, " ")[4])
           ic := &IceCandidateMessage{Type: "offer_ice_candidate", Candidate: *ice}
           room.SendToOutClients(ic, sessionId)
         }
