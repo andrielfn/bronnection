@@ -78,7 +78,7 @@ var app = window.app || {};
   fn.createPeerConnection = function() {
     app.trace("Offer PeerConnection created.")
     return new RTCPeerConnection(
-      null,
+      app.config.iceServers,
       { optional: [{ RtpDataChannels: true }] }
     )
   }

@@ -5,6 +5,7 @@ import (
   "io"
   "log"
   "net/http"
+  "strings"
 
   "code.google.com/p/go.net/websocket"
 )
@@ -47,16 +48,18 @@ func websocketHandler(ws *websocket.Conn) {
         }
 
       case "caller_ice_candidate":
-        log.Println("Received caller ICECandidate.")
+        // log.Println("Received caller ICECandidate.")
         ice := &IceCandidate{}
         if err := json.Unmarshal(gm.Data, ice); err == nil {
+          log.Println("CALLER ICE:", strings.Split(ice.Candidate, " ")[4])
           websocket.JSON.Send(room.Offer.Websocket, &IceCandidateMessage{Type: "caller_ice_candidate", Candidate: *ice})
         }
 
       case "offer_ice_candidate":
-        log.Println("Received offer ICECandidate.")
+        // log.Println("Received offer ICECandidate.")
         ice := &IceCandidate{}
         if err := json.Unmarshal(gm.Data, ice); err == nil {
+          log.Println("OFFER ICE:", strings.Split(ice.Candidate, " ")[4])
           room.Offer.AddIceCandidate(ice)
         }
       }
