@@ -9,12 +9,7 @@ var app = window.app || {};
     this.peerConnection = this.createPeerConnection();
     this.dataChannel = this.createDataChannel();
 
-    this.signalingServer = new app.SignalingServer(
-      this.onSignalingOpen.bind(this),
-      this.onSignalingMessage.bind(this)
-    );
-
-    // this.getUserMedia();
+    this.getUserMedia();
     this.setHandlers();
   }
 
@@ -34,7 +29,7 @@ var app = window.app || {};
 
   fn.getUserMedia = function() {
     getUserMedia(
-      {audio: true, video: true},
+      { audio: true, video: true },
       this.setMediasSource.bind(this),
       function(err) { app.trace(err); }
     );
@@ -44,6 +39,11 @@ var app = window.app || {};
     $('[data-local-video]').attr('src', URL.createObjectURL(stream));
 
     this.peerConnection.addStream(stream);
+
+    this.signalingServer = new app.SignalingServer(
+      this.onSignalingOpen.bind(this),
+      this.onSignalingMessage.bind(this)
+    );
 
     if (this.clientType == "offer") {
       $(document).trigger("interface.displayLink", this.sessionId);
