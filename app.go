@@ -1,13 +1,14 @@
 package main
 
 import (
-  "code.google.com/p/go-uuid/uuid"
   "encoding/json"
   "io"
   "log"
   "net/http"
   "strings"
   "time"
+
+  "code.google.com/p/go-uuid/uuid"
 
   "code.google.com/p/go.net/websocket"
 )
@@ -123,7 +124,12 @@ func newRoom(rm json.RawMessage, ws *websocket.Conn, sId string) (r *Room) {
     log.Println(err)
   }
 
-  c := &Client{Websocket: ws, Uuid: sId, State: "in"}
+  c := &Client{
+    Websocket: ws,
+    Uuid:      sId,
+    State:     "in",
+  }
+
   r = &Room{RoomId: data.RoomId}
   r.AddClient(c)
 
