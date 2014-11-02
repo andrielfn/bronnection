@@ -34,7 +34,6 @@ var app = window.app || {};
     $(document).bind("connection.established", this.onConenctionEstablished.bind(this));
     $(document).bind("media.setLocal", this.onSetLocalVideo.bind(this));
     $(document).bind("media.setRemote", this.onSetRemoteVideo.bind(this));
-    $(document).bind("interface.displayLink", this.displayLink.bind(this));
 
     $(document).ready(this.bro.checkClientType.bind(this.bro));
   }
@@ -55,11 +54,6 @@ var app = window.app || {};
     this.logPanel.append("<p>" + message + "</p>");
   }
 
-  fn.displayLink = function(e, hash) {
-    var link = window.location.href;
-    this.startBox.show().find('a').html(link);
-  }
-
   fn.onSetLocalVideo = function(e, stream) {
     this.localVideo.attr('src', URL.createObjectURL(stream));
   }
@@ -69,8 +63,9 @@ var app = window.app || {};
   }
 
   fn.onHitEnterKey = function(e) {
-    if (e.charCode == 13) {
-      var message = this.chatInput.val();
+    var message = this.chatInput.val();
+
+    if (e.charCode == 13 && message !== "") {
       this.bro.onChatInput(message);
       this.onNewChatMessage(null, "my", message);
       this.chatInput.val('');

@@ -44,10 +44,6 @@ var app = window.app || {};
       this.onSignalingOpen.bind(this),
       this.onSignalingMessage.bind(this)
     );
-
-    if (this.clientType == "offer") {
-      $(document).trigger("interface.displayLink", this.sessionId);
-    }
   }
 
   fn.onIceDandidate = function(event) {

@@ -5,7 +5,6 @@ import (
   "io"
   "log"
   "net/http"
-  "strings"
   "time"
 
   "code.google.com/p/go-uuid/uuid"
@@ -50,19 +49,19 @@ func websocketHandler(ws *websocket.Conn) {
         room = joinRoom(gm.Data, ws, sessionId)
         log.Println("Join room:", room.RoomId)
 
-      case "caller_description":
-        time.Sleep(1 * time.Second)
-        log.Println("Received caller description.")
+      // case "caller_description":
+      //   time.Sleep(1 * time.Second)
+      //   log.Println("Received CALLER description.")
 
-        d := NewRoomMessageData{}
-        if err := json.Unmarshal(gm.Data, &d); err == nil {
-          desc := &DescriptionMessage{Type: "caller_description", Description: d.Description}
-          room.SendToInClients(desc, sessionId)
-        }
+      //   d := NewRoomMessageData{}
+      //   if err := json.Unmarshal(gm.Data, &d); err == nil {
+      //     desc := &DescriptionMessage{Type: "caller_description", Description: d.Description}
+      //     room.SendToInClients(desc, sessionId)
+      //   }
 
       case "offer_description":
         time.Sleep(1 * time.Second)
-        log.Println("Received offer description.")
+        log.Println("Received OFFER description.")
 
         d := NewRoomMessageData{}
         if err := json.Unmarshal(gm.Data, &d); err == nil {
@@ -73,7 +72,7 @@ func websocketHandler(ws *websocket.Conn) {
       case "caller_ice_candidate":
         ice := &IceCandidate{}
         if err := json.Unmarshal(gm.Data, ice); err == nil {
-          log.Println("CALLER ICE:", strings.Split(ice.Candidate, " ")[2], strings.Split(ice.Candidate, " ")[4])
+          // log.Println("CALLER ICE:", strings.Split(ice.Candidate, " ")[2], strings.Split(ice.Candidate, " ")[4])
           ic := &IceCandidateMessage{Type: "caller_ice_candidate", Candidate: *ice}
           room.SendToInClients(ic, sessionId)
         }
@@ -81,7 +80,7 @@ func websocketHandler(ws *websocket.Conn) {
       case "offer_ice_candidate":
         ice := &IceCandidate{}
         if err := json.Unmarshal(gm.Data, ice); err == nil {
-          log.Println("OFFER ICE:", strings.Split(ice.Candidate, " ")[2], strings.Split(ice.Candidate, " ")[4])
+          // log.Println("OFFER ICE:", strings.Split(ice.Candidate, " ")[2], strings.Split(ice.Candidate, " ")[4])
           ic := &IceCandidateMessage{Type: "offer_ice_candidate", Candidate: *ice}
           room.SendToOutClients(ic, sessionId)
         }
@@ -106,7 +105,6 @@ func joinRoom(rm json.RawMessage, ws *websocket.Conn, sId string) (r *Room) {
 
   c := &Client{Websocket: ws, Uuid: sId, State: "out"}
   r.AddClient(c)
-  log.Println(r.Clients[0])
   desc := &DescriptionMessage{Type: "caller_description", Description: data.Description}
   r.SendToInClients(desc, sId)
 
