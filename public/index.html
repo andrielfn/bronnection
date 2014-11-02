@@ -13,22 +13,31 @@
 <body>
   <header class="header">
     <h2>Bro<span>nnection</span></h2>
+
+    <nav class="nav">
+      <ul>
+        <li><a href="" data-log-button><img src="img/icon-log.svg" alt=""></a></li>
+        <li><a href="" data-chat-button><img src="img/icon-chat2.svg" alt=""></a></li>
+      </ul>
+    </nav>
   </header>
 
-  <section class="main-container">
-    <div class="medias" data-medias>
-      <video data-remote-video class="remote-video" autoplay></video>
+  <section class="content">
+    <section class="medias" data-medias>
       <video data-local-video class="local-video" muted="muted" autoplay></video>
-    </div>
+      <video data-remote-video class="remote-video" autoplay></video>
+    </section>
   </section>
 
-  <div class="chat">
+  <section data-chat-panel class="chat">
     <section class="chat-messages" data-chat-messages></section>
 
     <footer class="chat-footer">
       <input type="text" data-chat-input placeholder="Say something...">
     </footer>
-  </div>
+  </section>
+
+  <section data-log-panel class="log"></section>
 
   <script src="js/config.js"></script>
   <script src="js/interface.js"></script>

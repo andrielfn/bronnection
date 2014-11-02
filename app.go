@@ -24,11 +24,13 @@ func websocketHandler(ws *websocket.Conn) {
   var gm GenericMessage
   var room *Room
   var sessionId string = uuid.New()
+  log.Println("Client connected:", sessionId)
 
   for {
     err := websocket.JSON.Receive(ws, &gm)
     if err == io.EOF {
       room.RemoveClient(sessionId)
+      log.Println("Client disconencted", sessionId)
       if len(room.Clients) == 0 {
         log.Println("Removing room", room.RoomId)
         availableRooms.Remove(room.RoomId)

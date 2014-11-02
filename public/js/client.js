@@ -98,15 +98,13 @@ var app = window.app || {};
       this.createOffer();
     }
 
-
-
     app.trace("Sinaling server connected.")
   }
 
   fn.onSignalingMessage = function(message) {
     var data = JSON.parse(message.data);
 
-    console.log(data);
+    app.trace("Received " + message.data)
 
     if (data.type == "chat_message") {
       $(document).trigger("chat.newMessage", ["server", data.message]);

@@ -5,7 +5,9 @@ var app = window.app || {};
   function Trace() {}
 
   Trace.log = function(text) {
-    console.log((performance.now() / 1000).toFixed(3) + ": " + text);
+    var log = (performance.now() / 1000).toFixed(3) + ": " + text;
+    console.log(log);
+    $(document).trigger("interface.log", log);
   };
 
   app.trace = Trace.log;

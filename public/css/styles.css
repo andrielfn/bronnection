@@ -11,67 +11,111 @@ body {
 .header {
   background-color: #3d85cb;
   height: 60px;
+  position: relative;
 }
 
-header h2 {
+.header h2 {
   margin: 0;
   padding: 16px;
   color: #ffffff;
   font-weight: 300;
+  display: inline-block;
 }
 
-header h2 span {
+.header h2 span {
   color: #aec9e3;
+}
+
+.header .nav {
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+
+.header .nav ul {
+  margin: 10px;
+}
+
+.header .nav li {
+  list-style: none;
+  float: left;
+}
+
+.header .nav a {
+  display: block;
+  opacity: .5;
+  padding: 0 10px;
+}
+
+.header .nav a:hover {
+  opacity: .7;
+}
+
+.header .nav a img {
+ width: 36px;
 }
 
 /* ===============================================
  * MAIN CONTAINER
  *================================================*/
-.main-container {
-  position: absolute;
-  top: 60px;
-  bottom: 0;
-  right: 446px;
-  left: 0;
+.content {
+  outline: 1px solid red;
+  width: 70%;
 }
 
 .local-video {
-  position: absolute;
-  bottom: 0;
-  left: 0;
   background-color: #F4F4F4;
-  padding-right: 3px;
-  padding-top: 3px;
   width: 200px;
   height: 150px;
+  margin: 10px;
 }
 
 .remote-video {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
+  background-color: #F4F4F4;
+  width: 500px;
+  height: 375px;
+  margin: 10px;
 }
 
 /* ===============================================
+ * LOG
+ *================================================*/
+.log {
+  font-family: monospace;
+  overflow-x: scroll;
+}
+
+.log p {
+  margin: 0;
+  padding: 5px;
+}
+
+.log p:nth-child(even) {
+  background-color: #f0f0f0;
+}
+/* ===============================================
  * CHAT PANEL
  *================================================*/
-.chat {
-  background-color: #FFF;
+ .chat {
+  display: none;
+ }
+
+.chat, .log {
+  background-color: #fdfdfd;
   position: absolute;
   top: 60px;
-  bottom: -6px;
+  bottom: 0;
   right: 0;
-  width: 445px;
+  width: 28%;
   border-left: 1px solid #F4F4F4;
 }
 
 .chat-messages {
-  position: absolute;
-  top: 0;
-  bottom: 59px;
-  right: 0;
-  left: 0;
+  /*position: absolute;*/
+  /*top: 0;*/
+  /*bottom: 59px;*/
+  /*right: 0;*/
+  /*left: 0;*/
   overflow-x: scroll;
   font-weight: 300;
   font-size: 14px;
@@ -123,7 +167,7 @@ header h2 span {
 }
 
 .chat-footer {
-  width: 445px;
+  width: 350px;
   position: absolute;
   bottom: 0;
   right: 0;
@@ -132,7 +176,6 @@ header h2 span {
 
 .chat-footer input {
   border: none;
-  width: 445px;
   padding: 14px 14px 14px 40px;
   border-radius: 5px;
   font-size: 14px;
@@ -143,7 +186,7 @@ header h2 span {
 
 /* ===============================================
  * STATS
- *================================================*/
+ *================================================
 .main-container.stats {
   right: 0;
   padding: 20px;

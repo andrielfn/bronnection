@@ -1,5 +1,4 @@
 var app = window.app || {};
-// var offer, caller; // Gambis
 
 (function($, app) {
 
