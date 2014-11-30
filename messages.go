@@ -10,9 +10,9 @@ type GenericMessage struct {
 }
 
 type ChatMessage struct {
-  Type    string `json:"type"`
-  Sender  string `json:"sender"`
-  Message string `json:"message"`
+  Type     string `json:"type"`
+  Username string `json:"username"`
+  Message  string `json:"message"`
 }
 
 type DescriptionMessage struct {
@@ -27,6 +27,7 @@ type Description struct {
 
 type NewRoomMessageData struct {
   RoomId      string      `json:"room_id"`
+  Username    string      `json:"username"`
   Description Description `json:"description"`
 }
 
@@ -55,5 +56,5 @@ type IceCandidateMessage struct {
 }
 
 func serverChatMessage(m string) ChatMessage {
-  return ChatMessage{Type: "chat_message", Sender: "server", Message: m}
+  return ChatMessage{Type: "chat_message", Username: "server", Message: m}
 }

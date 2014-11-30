@@ -13,6 +13,7 @@
 <body>
   <header class="header">
     <h2>Bro<span>nnection</span></h2>
+    <h3 data-username></h3>
 
     <nav class="nav">
       <ul>
@@ -23,14 +24,20 @@
   </header>
 
   <section class="content">
-    <section class="medias" data-medias>
+    <section class="username-box" data-username-box>
+      <input type="text" data-username-input placeholder="Choose a username">
+      <button data-get-in-button>Get in!</button>
+    </section>
+
+    <section class="media" data-media-box>
       <video data-local-video class="local-video" muted="muted" autoplay></video>
       <video data-remote-video class="remote-video" autoplay></video>
     </section>
   </section>
 
   <section data-chat-panel class="chat">
-    <section class="chat-messages" data-chat-messages></section>
+    <section class="chat-messages" data-chat-messages>
+    </section>
 
     <footer class="chat-footer">
       <input type="text" data-chat-input placeholder="Say something...">

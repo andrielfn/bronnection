@@ -1,40 +1,22 @@
 var app = window.app || {};
 
 (function($, app) {
-
   function Bronnection() {}
 
   var fn = Bronnection.prototype;
 
-  fn.checkClientType = function() {
-    if (document.location.hash === "" || document.location.hash === undefined) {
-      this.createOffer();
-    } else {
-      this.createCaller();
-    }
-  }
+  fn.init = function(username, sessionId, type) {
+    this.username = username;
 
-  fn.createOffer = function() {
-    this.sessionId = this.generateSessionId();
-    this.client = new app.Client("offer", this.sessionId);
-    document.location.hash = this.sessionId;
-  }
+    app.trace("Started. Username: " + username +". Session ID: "+ sessionId);
 
-  fn.createCaller = function() {
-    this.sessionId = document.location.hash.slice(1);
-    this.client = new app.Client("caller", this.sessionId);
-  }
-
-  fn.generateSessionId = function() {
-    return Date.now()+"-"+Math.round(Math.random()*10000);
+    this.client = new app.Client(username, sessionId, type);
   }
 
   fn.onChatInput = function(message) {
-    this.client.dataChannel.send(message);
-  }
-
-  fn.setupMedia = function(successCallback) {
-    getUserMedia({ "video": true, "audio": true }, successCallback, function(err) { console.log(err); });
+    this.client.dataChannel.send(
+      JSON.stringify({ username: this.username, message: message })
+    );
   }
 
   app.Bronnection = Bronnection;

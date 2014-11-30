@@ -49,16 +49,6 @@ func websocketHandler(ws *websocket.Conn) {
         room = joinRoom(gm.Data, ws, sessionId)
         log.Println("Join room:", room.RoomId)
 
-      // case "caller_description":
-      //   time.Sleep(1 * time.Second)
-      //   log.Println("Received CALLER description.")
-
-      //   d := NewRoomMessageData{}
-      //   if err := json.Unmarshal(gm.Data, &d); err == nil {
-      //     desc := &DescriptionMessage{Type: "caller_description", Description: d.Description}
-      //     room.SendToInClients(desc, sessionId)
-      //   }
-
       case "offer_description":
         time.Sleep(1 * time.Second)
         log.Println("Received OFFER description.")
@@ -128,6 +118,7 @@ func newRoom(rm json.RawMessage, ws *websocket.Conn, sId string) (r *Room) {
     Websocket: ws,
     Uuid:      sId,
     State:     "in",
+    Username:  data.Username,
   }
 
   r = &Room{RoomId: data.RoomId}
@@ -181,5 +172,5 @@ func main() {
 
   log.Println("Server listening at :4000")
 
-  http.ListenAndServe(":4000", nil)
+  http.ListenAndServe(":5000", nil)
 }

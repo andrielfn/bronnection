@@ -14,12 +14,18 @@ body {
   position: relative;
 }
 
-.header h2 {
+.header h2,
+.header h3 {
   margin: 0;
-  padding: 16px;
+  line-height: 60px;
   color: #ffffff;
   font-weight: 300;
+  margin: 0 10px;
   display: inline-block;
+}
+
+.header h3 {
+  color: #aec9e3;
 }
 
 .header h2 span {
@@ -61,6 +67,25 @@ body {
 .content {
   width: 70%;
   position: relative;
+  padding: 10px;
+}
+
+.username-box input[type="text"] {
+  padding: 15px;
+  font-size: 22px;
+  border: 1px solid #E1E1E1;
+}
+
+.username-box button {
+  padding: 15px;
+  font-size: 22px;
+  background-color: #3d85cb;
+  color: #fff;
+  border: none;
+}
+
+.media {
+  display: none;
 }
 
 .local-video {
@@ -70,15 +95,15 @@ body {
   background-color: #F4F4F4;
   width: 150px;
   height: 112px;
-  margin: 5px;
-  border-right: 5px solid #FFF;
-  border-bottom: 5px solid #FFF;
+  margin: 10px;
+  border-right: 2px solid #FFF;
+  border-bottom: 2px solid #FFF;
 }
 
 .remote-video {
   width: 780px;
   height: 585px;
-  margin: 5px;
+  /*margin: 5px;*/
 }
 
 /* ===============================================
@@ -101,9 +126,9 @@ body {
 /* ===============================================
  * CHAT PANEL
  *================================================*/
- /*.chat {
-  display: none;
- }*/
+ .chat {
+  /*display: none;*/
+ }
 
 .chat, .log {
   background-color: #fdfdfd;
@@ -128,18 +153,29 @@ body {
 
 .chat-messages .message {
   position: relative;
-  padding: 20px 8px;
-  padding-left: 52px;
+  padding: 10px;
   margin: 0;
   min-height: 36px;
   border-bottom: 1px solid #F4F4F4;
+}
+.chat-messages .message strong {
+  color: #3D85CB;
+}
+
+.chat-messages .message.my-message strong {
+  color: #6CB430;
+}
+
+.chat-messages .message strong {
+  display: block;
+  margin-bottom: 10px;
 }
 
 .chat-messages .message:last-child {
   border-bottom: none;
 }
 
-.chat-messages .message:before {
+/*.chat-messages .message:before {
   display: inline-block;
   border-radius: 28px;
   font-size: 12px;
@@ -169,7 +205,7 @@ body {
   opacity: 0.3;
   padding: 11px 8px;
   content: 'Him';
-}
+}*/
 
 .chat-footer {
   position: absolute;

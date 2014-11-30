@@ -1,11 +1,12 @@
 var app = window.app || {};
 
 (function($, app) {
-  function Client(clientType, sessionId) {
-    app.trace("New " + clientType + " created.")
+  function Client(username, sessionId, type) {
+    app.trace("New " + type + " created.");
 
+    this.username = username;
     this.sessionId = sessionId;
-    this.clientType = clientType;
+    this.type = type;
     this.peerConnection = this.createPeerConnection();
     this.dataChannel = this.createDataChannel();
 
@@ -49,7 +50,7 @@ var app = window.app || {};
   fn.onIceDandidate = function(event) {
     if (event.candidate) {
       this.signalingServer.push({
-        type: this.clientType+"_ice_candidate",
+        type: this.type+"_ice_candidate",
         data: event.candidate
       });
     }
@@ -66,13 +67,13 @@ var app = window.app || {};
   }
 
   fn.onDataChannelMessage = function(e) {
-    $(document).trigger("chat.newMessage", ["his", e.data]);
+    $(document).trigger("chat.newMessage", JSON.parse(e.data));
 
     trace("Offer received new message: " + e.data);
   }
 
   fn.createPeerConnection = function() {
-    app.trace("Offer PeerConnection created.")
+    app.trace("PeerConnection created.")
     return new RTCPeerConnection(
       app.config.iceServers,
       { optional: [{ RtpDataChannels: true }] }
@@ -80,17 +81,20 @@ var app = window.app || {};
   }
 
   fn.createDataChannel = function() {
-    app.trace("Offer DataChannel created.")
+    app.trace("DataChannel created.")
     return this.peerConnection.createDataChannel("sendDataChannel", { reliable: true });
   }
 
   fn.onSignalingOpen = function() {
-    if (this.clientType == "offer") {
+    if (this.type == "offer") {
       this.signalingServer.push({
         type: "new_room",
-        data: { room_id: this.sessionId }
+        data: {
+          room_id: this.sessionId,
+          username: this.username
+        }
       });
-    } else if (this.clientType == "caller") {
+    } else if (this.type == "caller") {
       this.createOffer();
     }
 
@@ -103,7 +107,7 @@ var app = window.app || {};
     app.trace("Received " + message.data)
 
     if (data.type == "chat_message") {
-      $(document).trigger("chat.newMessage", ["server", data.message]);
+      $(document).trigger("chat.newMessage", data);
     } else if (data.type == "caller_description") {
       this.setRemoteDescription(data.description);
     } else if (data.type == "offer_description") {
@@ -124,7 +128,7 @@ var app = window.app || {};
   }
 
   fn.createAnswer = function() {
-    if (this.clientType == "offer") {
+    if (this.type == "offer") {
       this.peerConnection.createAnswer(
         this.setLocalDescription.bind(this),
         function(err) { app.trace(err); }
@@ -150,9 +154,9 @@ var app = window.app || {};
   fn.sendLocalDescription = function() {
     var type;
 
-    if (this.clientType == "caller") {
+    if (this.type == "caller") {
       type = "join_room";
-    } else if (this.clientType == "offer") {
+    } else if (this.type == "offer") {
       type = "offer_description";
     }
 
