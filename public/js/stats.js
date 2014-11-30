@@ -3,8 +3,7 @@ var app = window.app || {};
 (function($, app){
   function Stats() {
     this.websocket = new WebSocket("ws://localhost:4000/ws-stats");
-    this.offersTableStats = $('[data-table-offers-stats]');
-    this.callersTableStats = $('[data-table-callers-stats]');
+    this.listRooms = $('[data-list-rooms]');
 
     this.websocket.onmessage = this.onStatusUpdate.bind(this);
   }
@@ -13,24 +12,22 @@ var app = window.app || {};
 
   fn.onStatusUpdate = function(message) {
     var stats = JSON.parse(message.data);
+    console.log(stats);
     this.updateStats(stats);
   }
 
   // Come on, a bad code is always good for health.
   fn.updateStats = function(stats) {
-    var offersGames = this.offersTableStats.find('[data-games-column-stats]'),
-        offersMusic = this.offersTableStats.find('[data-music-column-stats]'),
-        offersCinema = this.offersTableStats.find('[data-cinema-column-stats]'),
-        callersGames = this.callersTableStats.find('[data-games-column-stats]'),
-        callersMusic = this.callersTableStats.find('[data-music-column-stats]'),
-        callersCinema = this.callersTableStats.find('[data-cinema-column-stats]');
+    this.listRooms.html('');
+    stats.forEach(this.printTable.bind(this));
+  }
 
-    offersGames.html(stats.connected_offers.games);
-    offersMusic.html(stats.connected_offers.music);
-    offersCinema.html(stats.connected_offers.cinema);
-    callersGames.html(stats.connected_callers.games);
-    callersMusic.html(stats.connected_callers.music);
-    callersCinema.html(stats.connected_callers.cinema);
+  fn.printTable = function(e) {
+    this.listRooms.append(this.newTableRow(e.room_id, e.connected_clients));
+  }
+
+  fn.newTableRow = function(roomId, connectedClients) {
+    return "<tr><td>" + roomId + "</td><td>" + connectedClients + "</td></tr>";
   }
 
   app.Stats = Stats;

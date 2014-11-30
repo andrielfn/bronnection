@@ -1,143 +1,149 @@
-@import url(http://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600);
+@import url(http://fonts.googleapis.com/css?family=Lato:300,400,700);
 
 body {
-  font-family: 'Source Sans Pro', sans-serif;
-}
-
-h3 {
-  margin: 0;
+  font-family: 'Lato', sans-serif;
   font-weight: 300;
-}
-
-h4 {
-  margin-bottom: 10px;
 }
 
 /* ===============================================
  * HEADER
  *================================================*/
 .header {
+  background-color: #3d85cb;
+  height: 60px;
+  position: relative;
+}
+
+.header h2,
+.header h3 {
+  margin: 0;
+  line-height: 60px;
+  color: #ffffff;
+  font-weight: 300;
+  margin: 0 10px;
+  display: inline-block;
+}
+
+.header h3 {
+  color: #aec9e3;
+}
+
+.header h2 span {
+  color: #aec9e3;
+}
+
+.header .nav {
   position: absolute;
+  right: 0;
   top: 0;
-  left: 0;
-  right: 300px;
-  border-bottom: 3px solid #F4F4F4;
-  background-color: #FAFAFA;
-  text-align: center;
-  padding: 15px 0;
+}
+
+.header .nav ul {
+  margin: 10px;
+}
+
+.header .nav li {
+  list-style: none;
+  float: left;
+}
+
+.header .nav a {
+  display: block;
+  opacity: .5;
+  padding: 0 10px;
+}
+
+.header .nav a:hover {
+  opacity: .7;
+}
+
+.header .nav a img {
+  height: 36px;
 }
 
 /* ===============================================
  * MAIN CONTAINER
  *================================================*/
-.main-container {
-  position: absolute;
-  top: 56px;
-  bottom: 0;
-  right: 300px;
-  left: 0;
+.content {
+  width: 70%;
+  position: relative;
+  padding: 10px;
 }
 
-.link-box {
-  display: none;
-  font-weight: 300;
-  color: #CCC;
-  font-size: 28px;
-  text-align: center;
-  background-color: #FFF;
+.username-box input[type="text"] {
+  padding: 15px;
+  font-size: 22px;
+  border: 1px solid #E1E1E1;
 }
 
-.link-box a {
-  font-size: 26px;
-  color: #DD4B34;
-}
-
-.box select {
-  border: 1px solid #F4F4F4;
-  background-color: #FFF;
-  border-radius: 5px;
-  width: 150px;
-  padding: 8px;
-  font-size: 14px;
-  -webkit-appearance:none;
-  -moz-appearance:none;
-  appearance:none;
-  background: #FFF url('../img/arrow-down.svg') no-repeat 95% center;
-  background-size: 16px;
-}
-
-.box button {
-  font-size: 14px;
+.username-box button {
+  padding: 15px;
+  font-size: 22px;
+  background-color: #3d85cb;
+  color: #fff;
   border: none;
-  color: #FFF;
-  border-radius: 5px;
-  padding: 8px;
-  width: 100px;
-  opacity: .7;
 }
 
-.box button:active {
-  box-shadow: 2px 2px 3px 3px rgba(0,0,0,0.15) inset,0 0 6px rgba(0,0,0,.2) inset
-}
-
-.box button.offer {
-  background-color: #F8B617;
-}
-
-.box button.caller {
-  background-color: #DD4B34;
+.media {
+  display: none;
 }
 
 .local-video {
-  top: 0;
-  position: absolute;
-  background-color: #F4F4F4;
-  padding-right: 3px;
-  padding-bottom: 3px;
-  width: 200px;
-  height: 150px;
-}
-
-.remote-video {
   position: absolute;
   top: 0;
   left: 0;
-  min-width: 80%;
+  background-color: #F4F4F4;
+  width: 150px;
+  height: 112px;
+  margin: 10px;
+  border-right: 2px solid #FFF;
+  border-bottom: 2px solid #FFF;
+}
+
+.remote-video {
+  width: 780px;
+  height: 585px;
+  /*margin: 5px;*/
 }
 
 /* ===============================================
+ * LOG
+ *================================================*/
+.log {
+  display: none;
+  font-family: monospace;
+  overflow-x: scroll;
+}
+
+.log p {
+  margin: 0;
+  padding: 8px;
+}
+
+.log p:nth-child(even) {
+  background-color: #f0f0f0;
+}
+/* ===============================================
  * CHAT PANEL
  *================================================*/
-.chat {
-  background-color: #FFF;
+ .chat {
+  /*display: none;*/
+ }
+
+.chat, .log {
+  background-color: #fdfdfd;
   position: absolute;
-  top: 0;
+  top: 60px;
   bottom: 0;
   right: 0;
-  width: 300px;
-  border-left: 3px solid #F4F4F4;
-}
-
-.chat-footer {
-  width: 300px;
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  background-color: #FAFAFA;
-  border-top: 3px solid #F4F4F4;
-}
-
-.chat-header {
-  border-bottom: 3px solid #F4F4F4;
-  background-color: #FAFAFA;
-  text-align: center;
-  padding: 15px 0;
+  width: 28%;
+  border-left: 1px solid #F4F4F4;
 }
 
 .chat-messages {
   position: absolute;
-  top: 56px;
-  bottom: 59px;
+  top: 0;
+  bottom: 46px;
   right: 0;
   left: 0;
   overflow-x: scroll;
@@ -147,34 +153,50 @@ h4 {
 
 .chat-messages .message {
   position: relative;
-  padding: 8px;
-  padding-left: 52px;
+  padding: 10px;
   margin: 0;
   min-height: 36px;
+  border-bottom: 1px solid #F4F4F4;
+}
+.chat-messages .message strong {
+  color: #3D85CB;
 }
 
-.chat-messages .message:before {
+.chat-messages .message.my-message strong {
+  color: #6CB430;
+}
+
+.chat-messages .message strong {
+  display: block;
+  margin-bottom: 10px;
+}
+
+.chat-messages .message:last-child {
+  border-bottom: none;
+}
+
+/*.chat-messages .message:before {
   display: inline-block;
   border-radius: 28px;
   font-size: 12px;
   margin-right: 5px;
   color: #FFF;
   position: absolute;
-  top: 8px;
+  top: 22px;
   left: 8px;
 }
 
 .chat-messages .message.server-message:before {
   background-color: #DD4B34;
   opacity: 0.3;
-  padding: 11px;
+  padding: 11px 10px;
   content: 'Srv';
 }
 
 .chat-messages .message.my-message:before {
   background-color: #0B9C57;
   opacity: 0.3;
-  padding: 11px 10px;
+  padding: 11px 8px;
   content: 'You';
 }
 
@@ -183,21 +205,30 @@ h4 {
   opacity: 0.3;
   padding: 11px 8px;
   content: 'Him';
+}*/
+
+.chat-footer {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  border-top: 1px solid #F4F4F4;
 }
 
 .chat-footer input {
-  border: 1px solid #DEDEDE;
-  padding: 8px;
+  width: 300px;
+  border: none;
+  padding: 14px 14px 14px 40px;
   border-radius: 5px;
   font-size: 14px;
   color: #888;
-  width: 260px;
-  margin: 9px 9px 8px 9px;
+  background: #fff url('../img/icon-chat.svg') no-repeat 2% center;
+  background-size: 22px;
 }
 
 /* ===============================================
  * STATS
- *================================================*/
+ *================================================
 .main-container.stats {
   right: 0;
   padding: 20px;
@@ -219,12 +250,16 @@ table {
 }
 
 table thead tr th {
+  width: 150px;
   padding: 5px;
   background: -webkit-gradient(linear, left top, left bottom, from(#FFF), to(#EAEAEA));
 }
 
+table th:first-child {
+  width: 200px;
+}
+
 table td {
-  width: 100px;
   text-align: center;
   padding: 5px;
   border: 1px solid #e0e0e0;

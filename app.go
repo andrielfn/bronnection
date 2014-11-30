@@ -1,13 +1,13 @@
 package main
 
 import (
+  "code.google.com/p/go-uuid/uuid"
+  "code.google.com/p/go.net/websocket"
   "encoding/json"
   "io"
   "log"
   "net/http"
-  "strings"
-
-  "code.google.com/p/go.net/websocket"
+  "time"
 )
 
 var availableRooms = make(AvailableRooms)
@@ -20,11 +20,19 @@ func websocketHandler(ws *websocket.Conn) {
 
   var gm GenericMessage
   var room *Room
+  var sessionId string = uuid.New()
+  log.Println("Client connected:", sessionId)
 
   for {
     err := websocket.JSON.Receive(ws, &gm)
     if err == io.EOF {
-      availableRooms.Remove(room.RoomId)
+      room.RemoveClient(sessionId)
+      log.Println("Client disconencted", sessionId)
+      if len(room.Clients) == 0 {
+        log.Println("Removing room", room.RoomId)
+        availableRooms.Remove(room.RoomId)
+      }
+
       statsChannel <- true
       return
     } else if err != nil {
@@ -32,49 +40,50 @@ func websocketHandler(ws *websocket.Conn) {
     } else {
       switch gm.Type {
       case "new_room":
-        room = newRoom(gm.Data, ws)
+        room = newRoom(gm.Data, ws, sessionId)
         log.Println("New room:", room.RoomId)
 
       case "join_room":
-        room = joinRoom(gm.Data, ws)
+        room = joinRoom(gm.Data, ws, sessionId)
         log.Println("Join room:", room.RoomId)
 
-      case "caller_description":
-        log.Println("Received caller description.")
+      case "offer_description":
+        time.Sleep(1 * time.Second)
+        log.Println("Received OFFER description.")
 
         d := NewRoomMessageData{}
         if err := json.Unmarshal(gm.Data, &d); err == nil {
-          websocket.JSON.Send(room.Offer.Websocket, &DescriptionMessage{Type: "caller_description", Description: d.Descrption})
+          desc := &DescriptionMessage{Type: "caller_description", Description: d.Description}
+          room.SendToOutClients(desc, sessionId)
         }
 
       case "caller_ice_candidate":
-        // log.Println("Received caller ICECandidate.")
         ice := &IceCandidate{}
         if err := json.Unmarshal(gm.Data, ice); err == nil {
-          log.Println("CALLER ICE:", strings.Split(ice.Candidate, " ")[4])
-          websocket.JSON.Send(room.Offer.Websocket, &IceCandidateMessage{Type: "caller_ice_candidate", Candidate: *ice})
+          // log.Println("CALLER ICE:", strings.Split(ice.Candidate, " ")[2], strings.Split(ice.Candidate, " ")[4])
+          ic := &IceCandidateMessage{Type: "caller_ice_candidate", Candidate: *ice}
+          room.SendToInClients(ic, sessionId)
         }
 
       case "offer_ice_candidate":
-        // log.Println("Received offer ICECandidate.")
         ice := &IceCandidate{}
         if err := json.Unmarshal(gm.Data, ice); err == nil {
-          log.Println("OFFER ICE:", strings.Split(ice.Candidate, " ")[4])
-          room.Offer.AddIceCandidate(ice)
+          // log.Println("OFFER ICE:", strings.Split(ice.Candidate, " ")[2], strings.Split(ice.Candidate, " ")[4])
+          ic := &IceCandidateMessage{Type: "offer_ice_candidate", Candidate: *ice}
+          room.SendToOutClients(ic, sessionId)
         }
       }
     }
   }
 }
 
-func joinRoom(rm json.RawMessage, ws *websocket.Conn) (r *Room) {
+func joinRoom(rm json.RawMessage, ws *websocket.Conn, sId string) (r *Room) {
   data := NewRoomMessageData{}
 
   if err := json.Unmarshal(rm, &data); err != nil {
     log.Println(err)
   }
 
-  caller := &Client{Websocket: ws, Type: "caller", Description: data.Descrption}
   r = availableRooms.Get(data.RoomId)
 
   if r == nil {
@@ -82,15 +91,10 @@ func joinRoom(rm json.RawMessage, ws *websocket.Conn) (r *Room) {
     return nil
   }
 
-  r.Caller = caller
-
-  websocket.JSON.Send(caller.Websocket, &DescriptionMessage{
-    Type:        "offer_description",
-    Description: r.Offer.Description})
-
-  for _, ice := range r.Offer.IceCandidates {
-    websocket.JSON.Send(ws, &IceCandidateMessage{Type: "offer_ice_candidate", Candidate: *ice})
-  }
+  c := &Client{Websocket: ws, Uuid: sId, State: "out"}
+  r.AddClient(c)
+  desc := &DescriptionMessage{Type: "caller_description", Description: data.Description}
+  r.SendToInClients(desc, sId)
 
   // Non-blocking channel send.
   select {
@@ -101,15 +105,23 @@ func joinRoom(rm json.RawMessage, ws *websocket.Conn) (r *Room) {
   return r
 }
 
-func newRoom(rm json.RawMessage, ws *websocket.Conn) (r *Room) {
+func newRoom(rm json.RawMessage, ws *websocket.Conn, sId string) (r *Room) {
   data := NewRoomMessageData{}
 
   if err := json.Unmarshal(rm, &data); err != nil {
     log.Println(err)
   }
 
-  offer := &Client{Websocket: ws, Type: "offer", Description: data.Descrption}
-  r = &Room{RoomId: data.RoomId, Offer: offer}
+  c := &Client{
+    Websocket: ws,
+    Uuid:      sId,
+    State:     "in",
+    Username:  data.Username,
+  }
+
+  r = &Room{RoomId: data.RoomId}
+  r.AddClient(c)
+
   availableRooms.Add(r)
 
   websocket.JSON.Send(ws, serverChatMessage("You are connected and waiting a user get in."))
@@ -123,25 +135,30 @@ func newRoom(rm json.RawMessage, ws *websocket.Conn) (r *Room) {
   return r
 }
 
+func status() []StatusRoom {
+  sr := make([]StatusRoom, len(availableRooms))
+  i := 0
+  for _, v := range availableRooms {
+    sr[i] = StatusRoom{RoomId: v.RoomId, ConnectedClients: len(v.Clients)}
+    i++
+  }
+
+  return sr
+}
+
 func websocketStatsHandler(ws *websocket.Conn) {
   defer func() {
     log.Println("Stats closed")
     ws.Close()
   }()
 
-  d, _ := json.Marshal(&StatusMessage{Rooms: availableRooms})
-  log.Println(string(d))
-  // &StatusMessage{}
-
-  // websocket.JSON.Send(ws, )
+  websocket.JSON.Send(ws, status())
 
   for {
     select {
     case <-statsChannel:
       log.Println("Sending a status update")
-      // websocket.JSON.Send(ws, StatusMessage{
-      //   ConnectedOffers:  Subjects{Games: len(availableOffers["games"]), Music: len(availableOffers["music"]), Cinema: len(availableOffers["cinema"])},
-      //   ConnectedCallers: Subjects{Games: 0, Music: 0, Cinema: 0}})
+      websocket.JSON.Send(ws, status())
     }
   }
 }
@@ -153,5 +170,5 @@ func main() {
 
   log.Println("Server listening at :4000")
 
-  http.ListenAndServe(":4000", nil)
+  http.ListenAndServe(":5000", nil)
 }

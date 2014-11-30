@@ -1,20 +1,16 @@
 var app = window.app || {};
 
 (function($, app) {
-  function Client(clientType, sessionId) {
-    app.trace("New " + clientType + " created.")
+  function Client(username, sessionId, type) {
+    app.trace("New " + type + " created.");
 
+    this.username = username;
     this.sessionId = sessionId;
-    this.clientType = clientType;
+    this.type = type;
     this.peerConnection = this.createPeerConnection();
     this.dataChannel = this.createDataChannel();
 
-    this.signalingServer = new app.SignalingServer(
-      this.onSignalingOpen.bind(this),
-      this.onSignalingMessage.bind(this)
-    );
-
-    // this.getUserMedia();
+    this.getUserMedia();
     this.setHandlers();
   }
 
@@ -34,7 +30,7 @@ var app = window.app || {};
 
   fn.getUserMedia = function() {
     getUserMedia(
-      {audio: true, video: true},
+      { audio: true, video: true },
       this.setMediasSource.bind(this),
       function(err) { app.trace(err); }
     );
@@ -45,15 +41,16 @@ var app = window.app || {};
 
     this.peerConnection.addStream(stream);
 
-    if (this.clientType == "offer") {
-      $(document).trigger("interface.displayLink", this.sessionId);
-    }
+    this.signalingServer = new app.SignalingServer(
+      this.onSignalingOpen.bind(this),
+      this.onSignalingMessage.bind(this)
+    );
   }
 
   fn.onIceDandidate = function(event) {
     if (event.candidate) {
       this.signalingServer.push({
-        type: this.clientType+"_ice_candidate",
+        type: this.type+"_ice_candidate",
         data: event.candidate
       });
     }
@@ -70,13 +67,13 @@ var app = window.app || {};
   }
 
   fn.onDataChannelMessage = function(e) {
-    $(document).trigger("chat.newMessage", ["his", e.data]);
+    $(document).trigger("chat.newMessage", JSON.parse(e.data));
 
     trace("Offer received new message: " + e.data);
   }
 
   fn.createPeerConnection = function() {
-    app.trace("Offer PeerConnection created.")
+    app.trace("PeerConnection created.")
     return new RTCPeerConnection(
       app.config.iceServers,
       { optional: [{ RtpDataChannels: true }] }
@@ -84,18 +81,21 @@ var app = window.app || {};
   }
 
   fn.createDataChannel = function() {
-    app.trace("Offer DataChannel created.")
-    return this.peerConnection.createDataChannel("sendDataChannel", { reliable: false });
+    app.trace("DataChannel created.")
+    return this.peerConnection.createDataChannel("sendDataChannel", { reliable: true });
   }
 
   fn.onSignalingOpen = function() {
-    if (this.clientType == "offer") {
-      this.createOffer();
-    } else if (this.clientType == "caller") {
+    if (this.type == "offer") {
       this.signalingServer.push({
-        type: "join_room",
-        data: { room_id: this.sessionId }
+        type: "new_room",
+        data: {
+          room_id: this.sessionId,
+          username: this.username
+        }
       });
+    } else if (this.type == "caller") {
+      this.createOffer();
     }
 
     app.trace("Sinaling server connected.")
@@ -104,10 +104,10 @@ var app = window.app || {};
   fn.onSignalingMessage = function(message) {
     var data = JSON.parse(message.data);
 
-    console.log(data);
+    app.trace("Received " + message.data)
 
     if (data.type == "chat_message") {
-      $(document).trigger("chat.newMessage", ["server", data.message]);
+      $(document).trigger("chat.newMessage", data);
     } else if (data.type == "caller_description") {
       this.setRemoteDescription(data.description);
     } else if (data.type == "offer_description") {
@@ -128,7 +128,7 @@ var app = window.app || {};
   }
 
   fn.createAnswer = function() {
-    if (this.clientType == "caller") {
+    if (this.type == "offer") {
       this.peerConnection.createAnswer(
         this.setLocalDescription.bind(this),
         function(err) { app.trace(err); }
@@ -154,10 +154,10 @@ var app = window.app || {};
   fn.sendLocalDescription = function() {
     var type;
 
-    if (this.clientType == "offer") {
-      type = "new_room";
-    } else if(this.clientType == "caller") {
-      type = "caller_description";
+    if (this.type == "caller") {
+      type = "join_room";
+    } else if (this.type == "offer") {
+      type = "offer_description";
     }
 
     this.signalingServer.push({

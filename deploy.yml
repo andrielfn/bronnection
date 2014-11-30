@@ -1,0 +1,27 @@
+# Server and build configuration.
+host: 104.131.112.145
+user: root
+deploy_to: ~/yamate/fodao/do/bairro
+
+# Available OS are 'darwin', 'freebsd', 'linux' and 'windows'.
+os: "linux"
+
+# Available architectures are '386', 'amd64' and 'arm'.
+arch: "amd64"
+
+# The following folders will be attached to be deployed.
+folders:
+  - public
+
+# The following tasks will be executed with 'guri setup'.
+# By default, the setup will create the 'deploy_to' folder.
+# setup:
+#   - "touch /var/www/app/app.log"
+
+# The following tasks will be executed before the deploy.
+# before_deploy:
+#   - "service nginx stop"
+
+# The following tasks will be executed after the deploy.
+# after_deploy:
+#   - "service nginx restart"
